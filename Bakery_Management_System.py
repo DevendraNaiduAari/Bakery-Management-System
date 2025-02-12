@@ -21,6 +21,7 @@ class DatabaseConnection:
 class Authentication:
     def __init__(self):
         self.logged_in_user=None
+        self.user_role = None
     def register(self,connection,username,password,role):
         try:
             if role not in ['manager','cashier']:
@@ -288,47 +289,52 @@ def main_menu(connection):
             connection.close()
             print("Exiting the system. Goodbye!")
             break
-        elif choice=='3':
+        elif auth.logged_in_user:
+            if choice=='3':
+                if auth.user_role=='manager':
+                    item_name = input("Enter item name: ")
+                    price = float(input("Enter item price: "))
+                    stock = int(input("Enter stock quantity: "))
+                    inventory.add_item(connection,item_name, price, stock)   
+                else:
+                    print("Only Manager have the Access to add the items.") 
+
+            elif choice=='4':
                 item_name = input("Enter item name: ")
-                price = float(input("Enter item price: "))
-                stock = int(input("Enter stock quantity: "))
-                inventory.add_item(connection,item_name, price, stock)   
-                print("Only Manager have the Access to add the items.") 
+                quantity_sold = int(input("Enter quantity sold: "))
+                inventory.update_stock(connection,item_name, quantity_sold)
+            elif choice=='5':
+                period = input("Enter report period (daily/weekly/monthly): ")
+                sales.sales_report(connection, period)
 
-        elif choice=='4':
-            item_name = input("Enter item name: ")
-            quantity_sold = int(input("Enter quantity sold: "))
-            inventory.update_stock(connection,item_name, quantity_sold)
-        elif choice=='5':
-            period = input("Enter report period (daily/weekly/monthly): ")
-            sales.sales_report(connection, period)
-
-        elif choice=='6':
-            start_date = input("Enter start date (YYYY-MM-DD): ")
-            end_date = input("Enter end date (YYYY-MM-DD): ")
-            sales.custom_report(connection, start_date, end_date)
+            elif choice=='6':
+                start_date = input("Enter start date (YYYY-MM-DD): ")
+                end_date = input("Enter end date (YYYY-MM-DD): ")
+                sales.custom_report(connection, start_date, end_date)
         
-        elif choice=='7':
-            inventory.display_inventory(connection)
+            elif choice=='7':
+                inventory.display_inventory(connection)
 
-        elif choice=='8':
-            item_id = int(input("Enter item ID to remove: "))
-            inventory.remove_item(connection,item_id)
+            elif choice=='8':
+                item_id = int(input("Enter item ID to remove: "))
+                inventory.remove_item(connection,item_id)
 
-        elif choice=='9':
-            item_id = int(input("Enter item ID: "))
-            quantity = int(input("Enter quantity: "))
-            cart.add_to_cart(connection, item_id, quantity)
+            elif choice=='9':
+                item_id = int(input("Enter item ID: "))
+                quantity = int(input("Enter quantity: "))
+                cart.add_to_cart(connection, item_id, quantity)
 
-        elif choice=='10':
-            item_id = int(input("Enter Item id to remove from cart: "))
-            cart.remove_from_cart(connection,item_id)
+            elif choice=='10':
+                item_id = int(input("Enter Item id to remove from cart: "))
+                cart.remove_from_cart(connection,item_id)
 
-        elif choice=='11':
-            cart.generate_bill(connection)
+            elif choice=='11':
+                cart.generate_bill(connection)
             
+            else:
+                print("Invalid choice.")
         else:
-            print("Invalid choice.")   
+            print("You must log in first to access  ")    
 
 if __name__=="__main__":
     db=DatabaseConnection()
