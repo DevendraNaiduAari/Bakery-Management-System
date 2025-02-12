@@ -316,8 +316,11 @@ def main_menu(connection):
                 inventory.display_inventory(connection)
 
             elif choice=='8':
-                item_id = int(input("Enter item ID to remove: "))
-                inventory.remove_item(connection,item_id)
+                if auth.user_role=='manager':
+                    item_id = int(input("Enter item ID to remove: "))
+                    inventory.remove_item(connection,item_id)   
+                else:
+                    print("Only Manager have the Access to remove the items.") 
 
             elif choice=='9':
                 item_id = int(input("Enter item ID: "))
